@@ -41,12 +41,25 @@ spec:
               path: /
               port: http
           env:
+            - name: IMAGE_NAME
+              value: {{ .Chart.Name | quote }}
             - name: INGRESS_HOST
               value: ""
             - name: PROTOCOLS
               value: ""
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | quote }}
+            {{- if .Values.cloudantBinding }}
+            - name: CLOUDANT_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cloudantBinding | quote }}
+                  key: binding
+            {{- end }}
+            {{- if .Values.databaseName }}
+            - name: DATABASE_NAME
+              value: {{ .Values.databaseName | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
