@@ -109,3 +109,5 @@ task copyJarToServerJar(type: Copy) {
     }
     into 'build/libs'
 }
+
+apply from: 'gradle/build-cloudant.gradle'

@@ -47,6 +47,17 @@ spec:
               value: {{ include "starter-kit-chart.host" . }}
             - name: PROTOCOLS
               value: {{ include "starter-kit-chart.protocols" . }}
+            {{- if .Values.cloudantBinding }}
+            - name: CLOUDANT_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cloudantBinding | quote }}
+                  key: binding
+            {{- end }}
+            {{- if .Values.databaseName }}
+            - name: DATABASE_NAME
+              value: {{ .Values.databaseName | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
