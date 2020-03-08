@@ -300,6 +300,7 @@ spec:
             }
             stage('Package Helm Chart') {
                 sh '''#!/bin/bash
+                set -x
 
                 if [[ -z "${ARTIFACTORY_ENCRYPT}" ]]; then
                   echo "Skipping Artifactory step as Artifactory is not installed or configured"
