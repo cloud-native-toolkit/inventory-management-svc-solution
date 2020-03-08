@@ -46,7 +46,7 @@ spec:
             - name: INGRESS_HOST
               value: ""
             - name: PROTOCOLS
-              value: {{ include "starter-kit-chart.protocols" . }}
+              value: ""
             {{- if .Values.cloudantBinding }}
             - name: CLOUDANT_CONFIG
               valueFrom:
