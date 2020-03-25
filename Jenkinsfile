@@ -378,6 +378,8 @@ spec:
                     echo "HOST=${HOST}" >> ./env-config
                     echo "PORT=${PORT}" >> ./env-config
 
+                    cat ./env-config
+
                     URL="${PROTOCOL}://${HOST}"
 
                     # sleep for 10 seconds to allow enough time for the server to start
@@ -415,9 +417,9 @@ spec:
 
                     ./gradlew pactVerify \
                       -PpactBrokerUrl=${PACTBROKER_URL} \
-                      -PpactProtocol=${PROTOCOL} \
-                      -PpactHost=${HOST} \
-                      -PpactPort=${PORT} \
+                      -PpactProtocol=https \
+                      -PpactHost=pact-inventory-svc-dev.gct-showcase-ocp4-cluster-0143c5dd31acd8e030a1d6e0ab1380e3-0000.us-east.containers.appdomain.cloud \
+                      -PpactPort=443 \
                       -Ppact.verifier.publishResults=true
                 '''
             }
