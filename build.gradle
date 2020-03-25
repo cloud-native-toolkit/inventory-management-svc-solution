@@ -44,8 +44,11 @@ buildscript {
     }
 }
 
-// rootProject.name can be found in settings.gradle
-project.version = '1.0.0'
+
+def jsonFile = file('package.json')
+def parsedJson = new groovy.json.JsonSlurper().parseText(jsonFile.text)
+
+project.version = parsedJson.version
 
 // Configuration provided to nested scripts
 ext {
@@ -68,7 +71,10 @@ ext {
                     warContext: project.name
             ],
             pact: [
-                    pactBrokerUrl: project.hasProperty('pactBrokerUrl') ? project.getProperty('pactBrokerUrl') : 'http://localhost'
+                    pactBrokerUrl: project.hasProperty('pactBrokerUrl') ? project.getProperty('pactBrokerUrl') : 'http://localhost',
+                    protocol: project.hasProperty('pactProtocol') ? project.getProperty('pactProtocol') : 'http',
+                    host: project.hasProperty('pactHost') ? project.getProperty('pactHost') : 'localhost',
+                    port: project.hasProperty('pactPort') ? project.getProperty('pactPort') : '9080'
             ]
     ]
 }

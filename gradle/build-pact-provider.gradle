@@ -4,15 +4,18 @@ if (!project.ext.has('config')) {
     project.ext['config'] = [:]
 }
 
-def providerName = config.pact?.providerName ?: "HelloWorld_Provider"
+def providerName = config.pact?.providerName ?: project.name
 def myPactBrokerUrl = config.pact?.pactBrokerUrl ?: "http://localhost"
+def myPactProtocol = config.pact?.protocol ?: 'http'
+def myPactHost = config.pact?.host ?: 'localhost'
+def myPactPort = config.pact?.port ?: '9080'
 
 pact {
     serviceProviders {
         "${providerName}" {
-            protocol = 'http'
-            host = 'localhost'
-            port = '9080'
+            protocol = myPactProtocol
+            host = myPactHost
+            port = myPactPort
             path = '/'
 
             if ('pactVerify' in gradle.startParameter.taskNames) {
@@ -21,6 +24,3 @@ pact {
         }
     }
 }
-
-pactVerify.dependsOn 'installApps', 'libertyStart'
-pactVerify.finalizedBy 'libertyStop'

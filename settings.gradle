@@ -1,0 +1,4 @@
+def jsonFile = file('package.json')
+def parsedJson = new groovy.json.JsonSlurper().parseText(jsonFile.text)
+
+rootProject.name = parsedJson.name
