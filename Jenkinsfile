@@ -322,6 +322,7 @@ spec:
                     fi
 
                     set -x
+                    set -e
                     . ./env-config
 
                     cat ./env-config
