@@ -302,8 +302,15 @@ spec:
         container(name: 'jdk11', shell: '/bin/bash') {
             stage('Pact verify') {
                 sh '''#!/bin/bash
+                    if [[ -z "${PACTBROKER_URL}" ]]; then
+                      echo "PactBroker url not set. Skipping pact verification"
+                      exit 0
+                    fi
+
                     set -x
                     . ./env-config
+
+                    cat ./env-config
 
                     ./gradlew pactVerify \
                       -PpactBrokerUrl=${PACTBROKER_URL} \
