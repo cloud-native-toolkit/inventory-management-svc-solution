@@ -378,21 +378,23 @@ spec:
                     echo "HOST=${HOST}" >> ./env-config
                     echo "PORT=${PORT}" >> ./env-config
 
-                    cat ./env-config
-
                     URL="${PROTOCOL}://${HOST}"
 
+                    sleep_countdown=5
+
                     # sleep for 10 seconds to allow enough time for the server to start
-                    sleep 30
+                    sleep 10
+                    while [ $(curl -sL -w "%{http_code}\\n" "${URL}/health" -o /dev/null --connect-timeout 3 --max-time 5 --retry 3 --retry-max-time 30) != "200" ]; do
+                        sleep 30
+                        sleep_countdown=$((sleep_countdown-1))
+                        if [ sleep_countdown=0 ]; then
+                                echo "Could not reach health endpoint: ${URL}/health"
+                                exit 1;
+                        fi
+                    done
 
-                    if [[ $(curl -sL -w "%{http_code}\\n" "${URL}/health" -o /dev/null --connect-timeout 3 --max-time 5 --retry 3 --retry-max-time 30) == "200" ]]; then
-                        echo "Successfully reached health endpoint: ${URL}/health"
-                        echo "====================================================================="
-                    else
-                        echo "Could not reach health endpoint: ${URL}/health"
-                        exit 1
-                    fi
-
+                    echo "Successfully reached health endpoint: ${URL}/health"
+                    echo "====================================================================="
                 '''
             }
         }
@@ -405,7 +407,6 @@ spec:
                     fi
 
                     set -x
-                    set -e
                     . ./env-config
 
                     if ./gradlew tasks --all | grep -Eq "^pactVerify"; then
@@ -417,9 +418,9 @@ spec:
 
                     ./gradlew pactVerify \
                       -PpactBrokerUrl=${PACTBROKER_URL} \
-                      -PpactProtocol=https \
-                      -PpactHost=pact-inventory-svc-dev.gct-showcase-ocp4-cluster-0143c5dd31acd8e030a1d6e0ab1380e3-0000.us-east.containers.appdomain.cloud \
-                      -PpactPort=443 \
+                      -PpactProtocol=${PROTOCOL} \
+                      -PpactHost=${HOST} \
+                      -PpactPort=${PORT} \
                       -Ppact.verifier.publishResults=true
                 '''
             }
@@ -427,7 +428,6 @@ spec:
         container(name: 'ibmcloud', shell: '/bin/bash') {
             stage('Package Helm Chart') {
                 sh '''#!/bin/bash
-                set -x
 
                 if [[ -z "${ARTIFACTORY_URL}" ]]; then
                   echo "Skipping Artifactory step as Artifactory is not installed or configured"
