@@ -48,8 +48,10 @@ dependencies {
 	// spring actuator
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 
+    // https://mvnrepository.com/artifact/io.opentracing/opentracing-api
+    implementation group: 'io.opentracing', name: 'opentracing-api', version: '0.33.0'
 	// sprimg sleuth
-//    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:${springStarterSleuth}")
+    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:${springStarterSleuth}")
 
 	// cloudant
     implementation group: 'com.cloudant', name: 'cloudant-client', version: '2.17.0'
@@ -68,9 +70,6 @@ dependencies {
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: "${swaggerVersion}"
 	
     testImplementation("org.powermock:powermock-api-mockito2:${powermockMockitoVersion}")
-
-    // https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-spring-jaeger-cloud-starter
-    compile group: 'io.opentracing.contrib', name: 'opentracing-spring-jaeger-cloud-starter', version: '3.1.1'
 }
 
 test {
