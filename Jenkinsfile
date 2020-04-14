@@ -268,7 +268,7 @@ spec:
                     release-it patch ${PRE_RELEASE} \
                       --ci \
                       --no-npm \
-                      --git.pushArgs="--follow-tags -v",
+                      --git.pushArgs="--follow-tags -v" \
                       --no-git.requireCleanWorkingDir \
                       --verbose \
                       -VV
