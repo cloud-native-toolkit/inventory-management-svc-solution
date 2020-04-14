@@ -49,7 +49,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 
 	// sprimg sleuth
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:${springStarterSleuth}")
+//    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:${springStarterSleuth}")
 
 	// cloudant
     implementation group: 'com.cloudant', name: 'cloudant-client', version: '2.17.0'
