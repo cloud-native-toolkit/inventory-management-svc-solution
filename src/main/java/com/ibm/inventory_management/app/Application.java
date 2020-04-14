@@ -1,5 +1,8 @@
 package com.ibm.inventory_management.app;
 
+import io.jaegertracing.Configuration;
+import io.jaegertracing.Configuration.ReporterConfiguration;
+import io.jaegertracing.Configuration.SamplerConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -34,5 +37,12 @@ public class Application extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(Application.class);
+    }
+
+    @Bean
+    public io.opentracing.Tracer initTracer() {
+        SamplerConfiguration samplerConfig = new SamplerConfiguration().withType("const").withParam(1);
+        ReporterConfiguration reporterConfig = ReporterConfiguration.fromEnv().withLogSpans(true);
+        return Configuration.fromEnv("service-a").withSampler(samplerConfig).withReporter(reporterConfig).getTracer();
     }
 }
