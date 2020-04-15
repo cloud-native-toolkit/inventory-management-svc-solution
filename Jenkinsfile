@@ -250,6 +250,10 @@ spec:
                       exit 1
                     fi
                     git config --local credential.helper "!f() { echo username=\\$GIT_AUTH_USER; echo password=\\$GIT_AUTH_PWD; }; f"
+                    
+                    git fetch
+                    git fetch --tags
+                    git tag -l
 
                     git checkout -b ${BRANCH} --track origin/${BRANCH}
                     git branch --set-upstream-to=origin/${BRANCH} ${BRANCH}
