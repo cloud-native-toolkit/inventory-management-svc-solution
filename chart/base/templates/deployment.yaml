@@ -2,16 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "starter-kit.fullname" . }}
+  {{- if and .Values.vcsInfo.repoUrl .Values.vcsInfo.branch }}
   annotations:
-    app.openshift.io/vcs-ref: master
-    app.openshift.io/vcs-uri: https://github.com/gct-showcase/inventory-svc
+    app.openshift.io/vcs-ref: {{ .Values.vcsInfo.branch }}
+    app.openshift.io/vcs-uri: {{ .Values.vcsInfo.repoUrl }}
+  {{- end }}
   labels:
     app.kubernetes.io/name: {{ include "starter-kit.name" . }}
     helm.sh/chart: {{ include "starter-kit.chart" . }}
     app.openshift.io/runtime: java
-    app.kubernetes.io/part-of: inventory
     app.kubernetes.io/instance: {{ .Release.Name }}
     app: {{ .Release.Name }}
+    {{- if .Values.partOf }}
+    app.kubernetes.io/part-of: {{ .Values.partOf }}
+    {{- end}}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -46,25 +50,12 @@ spec:
               path: /
               port: http
           env:
-            - name: IMAGE_NAME
-              value: {{ .Chart.Name | quote }}
             - name: INGRESS_HOST
               value: ""
             - name: PROTOCOLS
               value: ""
             - name: LOG_LEVEL
               value: {{ .Values.logLevel | quote }}
-            {{- if .Values.cloudantBinding }}
-            - name: CLOUDANT_CONFIG
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.cloudantBinding | quote }}
-                  key: binding
-            {{- end }}
-            {{- if .Values.databaseName }}
-            - name: DATABASE_NAME
-              value: {{ .Values.databaseName | quote }}
-            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -72,10 +63,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
+    affinity:
+      {{- toYaml . | nindent 8 }}
     {{- end }}
     {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
+    tolerations:
+      {{- toYaml . | nindent 8 }}
     {{- end }}

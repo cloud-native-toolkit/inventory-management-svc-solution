@@ -174,6 +174,8 @@ spec:
           value: ${namespace}
         - name: BUILD_NUMBER
           value: ${env.BUILD_NUMBER}
+        - name: BRANCH
+          value: ${branch}
     - name: trigger-cd
       image: docker.io/garagecatalyst/ibmcloud-dev:1.0.8
       tty: true
@@ -197,6 +199,7 @@ spec:
             stage('Setup') {
                 sh '''
                     echo "IMAGE_NAME=$(basename -s .git `git config --get remote.origin.url` | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')" > ./env-config
+                    echo "REPO_URL=$(git config --get remote.origin.url)" >> ./env-config
 
                     chmod a+rw ./env-config
                 '''
@@ -248,12 +251,10 @@ spec:
                     fi
                     git config --local credential.helper "!f() { echo username=\\$GIT_AUTH_USER; echo password=\\$GIT_AUTH_PWD; }; f"
 
-                    git fetch origin ${BRANCH}
-                    git fetch --tags
-                    git checkout ${BRANCH}
+                    git checkout -b ${BRANCH} --track origin/${BRANCH}
                     git branch --set-upstream-to=origin/${BRANCH} ${BRANCH}
 
-                    git config --global user.name "Jenkins Pipeline"
+                    git config --global user.name "$GIT_AUTH_USER"
                     git config --global user.email "jenkins@ibmcloud.com"
 
                     mkdir -p ~/.npm
@@ -268,7 +269,6 @@ spec:
                     release-it patch ${PRE_RELEASE} \
                       --ci \
                       --no-npm \
-                      --git.pushArgs="--follow-tags -v" \
                       --no-git.requireCleanWorkingDir \
                       --verbose \
                       -VV
@@ -340,6 +340,8 @@ spec:
 
                     # Update helm chart with repository and tag values
                     cat ${CHART_PATH}/values.yaml | \
+                        yq w - vcsInfo.repoUrl "${REPO_URL}" | \
+                        yq w - vcsInfo.branch "${BRANCH}" | \
                         yq w - image.repository "${IMAGE_REPOSITORY}" | \
                         yq w - image.tag "${IMAGE_VERSION}" | \
                         yq w - ingress.enabled "${INGRESS_ENABLED}" | \
