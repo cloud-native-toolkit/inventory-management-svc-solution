@@ -20,9 +20,7 @@ import org.springframework.core.env.Environment;
 public class Application extends SpringBootServletInitializer {
     @Autowired
     Environment environment;
-    @Value("${spring.application.name}")
-    private String appName;
-
+ 
     public static void main(String[] args) {
         SpringApplication.run(com.ibm.inventory_management.app.Application.class, args);
     }
@@ -46,6 +44,6 @@ public class Application extends SpringBootServletInitializer {
     public io.opentracing.Tracer initTracer() {
         SamplerConfiguration samplerConfig = new SamplerConfiguration().withType("const").withParam(1);
         ReporterConfiguration reporterConfig = ReporterConfiguration.fromEnv().withLogSpans(true);
-        return Configuration.fromEnv(this.appName).withSampler(samplerConfig).withReporter(reporterConfig).getTracer();
+        return Configuration.fromEnv("inventory").withSampler(samplerConfig).withReporter(reporterConfig).getTracer();
     }
 }
