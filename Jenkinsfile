@@ -1,3 +1,5 @@
+def pipelineVersion='1.1.1'
+println "Pipeline version: ${pipelineVersion}"
 /*
  * This is a vanilla Jenkins pipeline that relies on the Jenkins kubernetes plugin to dynamically provision agents for
  * the build containers.
@@ -249,8 +251,9 @@ spec:
                       echo "  Update your CLI and register the pipeline again"
                       exit 1
                     fi
+
                     git config --local credential.helper "!f() { echo username=\\$GIT_AUTH_USER; echo password=\\$GIT_AUTH_PWD; }; f"
-                    
+
                     git fetch
                     git fetch --tags
                     git tag -l
@@ -258,8 +261,17 @@ spec:
                     git checkout -b ${BRANCH} --track origin/${BRANCH}
                     git branch --set-upstream-to=origin/${BRANCH} ${BRANCH}
 
-                    git config --global user.name "$GIT_AUTH_USER"
+                    git config --global user.name "Jenkins Pipeline"
                     git config --global user.email "jenkins@ibmcloud.com"
+
+                    if [[ "${BRANCH}" == "master" ]] && [[ $(git describe --tag `git rev-parse HEAD`) =~ (^[0-9]+.[0-9]+.[0-9]+$) ]] || \
+                       [[ $(git describe --tag `git rev-parse HEAD`) =~ (^[0-9]+.[0-9]+.[0-9]+-${BRANCH}[.][0-9]+$) ]]
+                    then
+                        echo "Latest commit is already tagged"
+                        echo "IMAGE_NAME=$(basename -s .git `git config --get remote.origin.url` | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')" > ./env-config
+                        echo "IMAGE_VERSION=$(git describe --abbrev=0 --tags)" >> ./env-config
+                        exit 0
+                    fi
 
                     mkdir -p ~/.npm
                     npm config set prefix ~/.npm
@@ -280,7 +292,9 @@ spec:
 
                     git push --follow-tags -v
 
-                    echo "IMAGE_VERSION=$(git describe --abbrev=0 --tags)" >> ./env-config
+                    echo "IMAGE_VERSION=$(git describe --abbrev=0 --tags)" > ./env-config
+                    echo "IMAGE_NAME=$(basename -s .git `git config --get remote.origin.url` | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')" >> ./env-config
+                    echo "REPO_URL=$(git config --get remote.origin.url)" >> ./env-config
 
                     cat ./env-config
                 '''

@@ -1,4 +1,4 @@
-# Default values for starter-kit-chart.
+# Default values for template-node-typescript.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 global: {}
@@ -29,7 +29,7 @@ ingress:
     # web or app - https://cloud.ibm.com/docs/services/appid?topic=appid-kube-auth
     requestType: web
 
-  #  host: hello
+#  host: hello
   namespaceInHost: true
   subdomain: containers.appdomain.cloud
   path: "/"
@@ -40,4 +40,8 @@ vcsInfo:
   repoUrl: ""
   branch: ""
 
-partOf: inventory
+partOf: ""
+
+connectsTo: ""
+
+runtime: ""
