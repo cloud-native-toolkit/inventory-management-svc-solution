@@ -1,7 +1,8 @@
 spring:
   application:
     name: "${IMAGE_NAME:inventory-svc-default}"
-
+  main:
+    allow-bean-definition-overriding: true
   profiles:
     active: mock
 
