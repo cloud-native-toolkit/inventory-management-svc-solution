@@ -48,3 +48,6 @@ partOf: inventory
 connectsTo: ""
 
 runtime: spring
+
+serviceMesh:
+  sidecar: true
