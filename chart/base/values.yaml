@@ -45,7 +45,7 @@ vcsInfo:
 
 partOf: inventory
 
-connectsTo: ""
+connectsTo: null
 
 runtime: spring
 
