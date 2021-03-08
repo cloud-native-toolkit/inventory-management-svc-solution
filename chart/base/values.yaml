@@ -22,7 +22,7 @@ service:
 route:
   enabled: false
   rewrite-target: "/"
-  path: "/api"
+  path: "/"
 
 ingress:
   enabled: true
