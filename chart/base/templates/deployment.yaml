@@ -47,10 +47,10 @@ spec:
               protocol: TCP
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.image.port }}
+              port: http
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.image.port }}
+              port: http
           env:
             - name: INGRESS_HOST
               value: ""
