@@ -8,13 +8,14 @@ metadata:
     app.openshift.io/vcs-uri: {{ trimSuffix ".git" .Values.vcsInfo.repoUrl }}
   {{- end }}
   {{- if .Values.connectsTo }}
-    app.openshift.io/connects-to: {{ printf "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":%s}]" (toJson .Values.connectsTo) | squote }}
+    app.openshift.io/connects-to: {{ printf "'[%s]'" (include "helm-toolkit.utils.joinListWithCommaAndDoubleQuotes" .Values.connectsTo)  }}
   {{- end }}
   labels:
     app.kubernetes.io/name: {{ include "starter-kit.name" . }}
+    app: {{ include "starter-kit.name" . }}
+    version: {{ .Values.image.tag | quote }}
     helm.sh/chart: {{ include "starter-kit.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ include "starter-kit.fullname" . }}
     {{- if .Values.partOf }}
     app.kubernetes.io/part-of: {{ .Values.partOf }}
     {{- end}}
@@ -26,12 +27,17 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "starter-kit.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: {{ include "starter-kit.name" . }}
+      app.kubernetes.io/instance: {{ include "starter-kit.name" . }}
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: {{ .Values.serviceMesh.sidecar | default "false" | quote }}
       labels:
         app.kubernetes.io/name: {{ include "starter-kit.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app: {{ include "starter-kit.name" . }}
+        version: {{ .Values.image.tag | quote }}
+        app.kubernetes.io/instance: {{ include "starter-kit.name" . }}
     spec:
       {{- if .Values.image.secretName }}
       imagePullSecrets:
