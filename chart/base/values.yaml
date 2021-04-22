@@ -21,6 +21,8 @@ service:
 
 route:
   enabled: false
+  rewriteTarget: "/"
+  path: "/"
 
 ingress:
   enabled: true
