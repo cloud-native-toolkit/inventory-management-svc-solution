@@ -1,13 +1,18 @@
 package com.ibm.inventory_management.config;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+@Profile("cloudant")
 @Component
 public class CloudantConfigFactory {
+    private static final Logger log = LoggerFactory.getLogger(CloudantConfigFactory.class);
     @Bean
     public CloudantConfig buildCloudantConfig() throws IOException {
         return buildConfigFromBinding(
@@ -17,6 +22,10 @@ public class CloudantConfigFactory {
     }
 
     protected String loadCloudantConfig() throws IOException {
+        if (System.getProperty("CLOUDANT_CONFIG") != null) {
+            log.warn("Config not found at CLOUDANT_CONFIG");
+        }
+
         return System.getProperty("CLOUDANT_CONFIG") != null
                 ? System.getProperty("CLOUDANT_CONFIG")
                 : loadCloudantMappingFromLocalDev().getCloudantConfig();
@@ -44,10 +53,12 @@ public class CloudantConfigFactory {
             return new CloudantConfig();
         }
 
+        log.debug("Building cloudant config from value: " + binding);
+
         final CloudantConfig baseConfig = mapper.readValue(binding, CloudantConfig.class);
 
         if (baseConfig == null) {
-            return new CloudantConfig();
+            throw new CloudantConfigException("Unable to parse binding as CloudantConfig: " + baseConfig);
         }
 
         return baseConfig.withDatabaseName(databaseName);

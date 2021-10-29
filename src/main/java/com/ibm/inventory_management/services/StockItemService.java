@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.Database;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
