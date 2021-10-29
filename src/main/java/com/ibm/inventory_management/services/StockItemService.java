@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import com.ibm.inventory_management.config.CloudantConfig;
 import com.ibm.inventory_management.models.StockItem;
 
-@Profile("!mock")
+@Profile("cloudant")
 @Service
 public class StockItemService implements StockItemApi {
     @Bean
