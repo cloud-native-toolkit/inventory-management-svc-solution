@@ -53,3 +53,10 @@ runtime: spring
 
 serviceMesh:
   sidecar: true
+
+## Name of the secret that contains the information to bind to the Cloudant instance
+cloudantBinding: ""
+## Name of the database, if connecting to a backend database
+databaseName: ""
+## Comma-separated list of SpringBoot profiles that should be active in the deployment
+activeProfiles: "mock"
